@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ColorCave Books | Vibrant Bookstore</title>
+  <!-- Google Fonts: Playfair + Poppins for modern colorful vibe -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Space Grotesk', sans-serif;
+      background: linear-gradient(145deg, #f8f2ff 0%, #ffe6f0 100%);
+      color: #1b1b2c;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* scrollbar fun */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ffddee;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff6b9d;
+      border-radius: 10px;
+    }
+
+    /* preloader - book stack */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #2d1b36;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .preloader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .book-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: bounceStack 0.9s infinite alternate;
+    }
+    .book-stack div {
+      width: 70px;
+      height: 20px;
+      margin: 3px;
+      border-radius: 8px;
+      background: #ffb347;
+    }
+    .book-stack div:nth-child(1) { background: #ff6b9d; width: 85px; }
+    .book-stack div:nth-child(2) { background: #6c5ce7; width: 75px; }
+    .book-stack div:nth-child(3) { background: #00cec9; width: 65px; }
+    .book-stack div:nth-child(4) { background: #fdcb6e; width: 55px; }
+    @keyframes bounceStack {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-12px); }
+    }
+
+    /* glassmorphic colorful navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 245, 250, 0.88);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid rgba(255, 107, 157, 0.2);
+    }
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo h2 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff6b9d, #a363d9, #00cec9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #2d2b4e;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: #ff6b9d;
+      transform: translateY(-2px);
+    }
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #a363d9;
+    }
+    @media (max-width: 780px) {
+      .nav-links {
+        position: fixed;
+        top: 75px;
+        left: -100%;
+        width: 75%;
+        height: 100vh;
+        background: rgba(255, 245, 250, 0.98);
+        backdrop-filter: blur(30px);
+        flex-direction: column;
+        padding: 2rem;
+        transition: 0.3s;
+        gap: 2rem;
+        box-shadow: 8px 0 25px rgba(0,0,0,0.1);
+        border-radius: 0 32px 0 0;
+      }
+      .nav-links.active {
+        left: 0;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
+
+    /* common sections */
+    section {
+      padding: 5rem 1.8rem;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .section-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: linear-gradient(120deg, #ff6b9d, #a363d9, #00cec9);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    /* hero colorful full slider with BOOK images only */
+    .hero-slider {
+      width: 100%;
+      height: 85vh;
+      min-height: 550px;
+    }
+    .hero-swiper .swiper-slide {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      border-radius: 0 0 48px 48px;
+    }
+    .hero-overlay {
+      background: linear-gradient(145deg, rgba(0,0,0,0.2), rgba(97, 47, 121, 0.4));
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      backdrop-filter: brightness(0.9);
+    }
+    .hero-overlay h1 {
+      font-size: 4.2rem;
+      font-weight: 800;
+      text-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+      animation: floatText 1s ease;
+    }
+    .hero-overlay p {
+      font-size: 1.3rem;
+      max-width: 600px;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+    @keyframes floatText {
+      0% { opacity: 0; transform: translateY(40px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+    .btn-group {
+      gap: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.25s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #ff6b9d;
+      color: white;
+      box-shadow: 0 12px 20px -8px rgba(255,107,157,0.5);
+    }
+    .btn-primary:hover {
+      background: #e8436e;
+      transform: scale(1.02);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+    }
+    .btn-outline:hover {
+      background: white;
+      color: #2d1b36;
+    }
+
+    /* about section with books image */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .about-img img {
+      width: 100%;
+      border-radius: 42px;
+      box-shadow: 0 25px 40px -12px #ff9bc0;
+      transition: 0.5s;
+    }
+    .about-img img:hover { transform: scale(1.02) rotate(1deg);}
+
+    /* product categories - colorful cards with BOOK icons */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+    .book-cat {
+      background: white;
+      border-radius: 32px;
+      padding: 1.6rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+      border: 1px solid rgba(255,107,157,0.2);
+      box-shadow: 0 12px 24px -12px rgba(0,0,0,0.1);
+    }
+    .book-cat:hover {
+      transform: translateY(-12px);
+      background: #fff0f5;
+      box-shadow: 0 28px 32px -12px #ff6b9d66;
+    }
+    .book-cat i {
+      font-size: 3rem;
+      color: #a363d9;
+    }
+    .book-cat h3 { margin: 0.8rem 0; font-weight: 800;}
+
+    /* gallery - ONLY BOOK IMAGES (colorful book covers) */
+    .book-gallery {
+      columns: 3 260px;
+      gap: 1.6rem;
+    }
+    .gallery-book {
+      break-inside: avoid;
+      margin-bottom: 1.6rem;
+      border-radius: 2rem;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .gallery-book img {
+      width: 100%;
+      border-radius: 28px;
+      transition: transform 0.45s ease, box-shadow 0.3s;
+      box-shadow: 0 15px 20px -8px rgba(0,0,0,0.2);
+    }
+    .gallery-book:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 22px 32px -8px #ff9bc0;
+    }
+
+    /* lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.25s;
+    }
+    .lightbox.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .lightbox img {
+      max-width: 85%;
+      max-height: 85%;
+      border-radius: 28px;
+    }
+
+    /* why choose - colorful features */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 2rem;
+    }
+    .feature-card {
+      background: rgba(255, 240, 245, 0.8);
+      backdrop-filter: blur(8px);
+      border-radius: 2rem;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid #ffc2d6;
+    }
+
+    /* testimonial */
+    .testi-swiper .swiper-slide {
+      background: #ffffffcc;
+      backdrop-filter: blur(8px);
+      padding: 2rem;
+      border-radius: 2rem;
+      text-align: center;
+    }
+
+    /* contact */
+    .contact-flex {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+    .contact-info {
+      background: rgba(255,245,250,0.7);
+      border-radius: 2rem;
+      padding: 2rem;
+    }
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #25d366;
+      color: white;
+      width: 58px;
+      height: 58px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 99;
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      left: 2rem;
+      background: #a363d9;
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+      z-index: 99;
+    }
+    .back-to-top.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    footer {
+      background: #211b2b;
+      color: #f4e2f0;
+      padding: 2rem;
+      text-align: center;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(45px);
+      transition: all 0.8s ease;
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (max-width: 780px) {
+      .about-grid, .contact-flex {
+        grid-template-columns: 1fr;
+      }
+      .hero-overlay h1 { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div class="book-stack">
+    <div></div><div></div><div></div><div></div>
+  </div>
+</div>
+
+<!-- navbar -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo"><h2> BOOKS FACTORY <br> <img  style = " border-radius: 20px; border: 3px solid blue;"src="CAMPUS.PNG" alt="Campus Logo" class="logo" width="300PX" height="130PX"></h2></div>
+    <div class="hamburger" id="hamburger"><i class="fas fa-book-open"></i></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">Story</a></li>
+      <li><a href="#categories">Genres</a></li>
+      <li><a href="#gallery">Bookshelf</a></li>
+      <li><a href="#contact">Connect</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero Slider with ONLY book images (colorful covers) -->
+<section id="home" class="hero-slider">
+  <div class="swiper hero-swiper" style="height: 100%;">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" style="background-image: url('https://picsum.photos/id/20/1600/900?grayscale'); background-size: cover;">
+        <div class="hero-overlay"><h1>Turn Pages. Feel Colors.</h1><p>Vibrant books that spark imagination – fiction, fantasy, art & more.</p><div class="btn-group"><a href="#categories" class="btn btn-primary">Explore Books</a><a href="#contact" class="btn btn-outline">Visit Us</a></div></div>
+      </div>
+      <div class="swiper-slide" style="background-image: url('https://picsum.photos/id/24/1600/900'); background-size: cover;">
+        <div class="hero-overlay"><h1>Read in Full Color</h1><p>Every cover tells a story. Dive into our curated collection.</p><div class="btn-group"><a href="#gallery" class="btn btn-primary">Book Gallery</a><a href="#contact" class="btn btn-outline">Get in Touch</a></div></div>
+      </div>
+      <div class="swiper-slide" style="background-image: url('https://picsum.photos/id/42/1600/900'); background-size: cover;">
+        <div class="hero-overlay"><h1>Books That Shine</h1><p>From rainbow notebooks to fantasy novels.</p><div class="btn-group"><a href="#categories" class="btn btn-primary">Discover</a><a href="#contact" class="btn btn-outline">Contact</a></div></div>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
+
+<!-- about section with book images only -->
+<section id="about">
+  <div class="container">
+    <h2 class="section-title reveal">📖 The Book Factory Story</h2>
+    <div class="about-grid">
+      <div class="about-img reveal"><img src=" https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=700&auto=format&fit=crop&q=70" alt="Colorful books stack"></div>
+      <div class="about-text reveal"><h3 style="color:#ff6b9d;">Where books bloom in every hue</h3><p>At <strong>ColorCave Books</strong> (formerly Book Factory), we celebrate the joy of reading with vibrant, high-quality editions. From campus notebooks to rainbow diaries, each product is made for dreamers. Our books are designed to inspire creativity, using eco-friendly materials and stunning artwork.</p><p><i class="fas fa-heart" style="color:#ff6b9d;"></i> 10,000+ happy readers</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Product categories / Book types -->
+<section id="categories">
+  <div class="container">
+    <h2 class="section-title reveal">🌈 Book Genres & Stationery</h2>
+    <div class="categories-grid">
+      <div class="book-cat reveal"><i class="fas fa-dragon"></i><h3>Fantasy Novels</h3><p>Epic adventures</p></div>
+       <div class="book-cat reveal"><i class="fas fa-brain"></i><h3>Self-Help</h3><p>Grow & glow</p></div>
+      <div class="book-cat reveal"><i class="fas fa-palette"></i><h3>Art & Design</h3><p>Visually stunning</p></div>
+      <div class="book-cat reveal"><i class="fas fa-flask"></i><h3>Science</h3><p>Curious minds</p></div>
+      <div class="book-cat reveal"><i class="fas fa-chalkboard-user"></i><h3>Campus Notebooks</h3><p>Colorful notes</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY section - Only books images (colorful book covers) -->
+<section id="gallery">
+  <div class="container">
+    <h2 class="section-title reveal">🎨 Bookshelf Gallery</h2>
+    <div class="book-gallery" id="bookGallery">
+      <!-- Use unsplash/placeholder book images - but all book related, colorful -->
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66" alt="Colorful book 1"></div>
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1517842645767-c639042777db" alt="Book stack rainbow"></div>
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1455390582262-044cdead277a " alt="Open book magic"></div>
+      <div class="gallery-book"><img src=" https://images.unsplash.com/photo-1513258496099-48168024aec0" alt="Hardcover bright"></div>
+      <div class="gallery-book"><img src=" https://images.unsplash.com/photo-1524995997946-a1c2e315a42f" alt="Notebook colorful"></div>
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353 " alt="Books with flowers"></div>
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6 " alt="Coffee and book"></div>
+      <div class="gallery-book"><img src="https://images.unsplash.com/photo-1512820790803-83ca734da794 " alt="Vintage colorful books"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Why choose us - bookish features -->
+<section>
+  <div class="container">
+    <h2 class="section-title reveal">💎 Why We're Book Lovers' Choice</h2>
+    <div class="feature-grid">
+      <div class="feature-card reveal"><i class="fas fa-feather-alt fa-2x" style="color:#6c5ce7;"></i><h3>Vibrant Editions</h3><p>Rainbow covers & art prints</p></div>
+      <div class="feature-card reveal"><i class="fas fa-leaf fa-2x" style="color:#00b894;"></i><h3>Eco-Friendly Paper</h3><p>Plantable & recycled</p></div>
+      <div class="feature-card reveal"><i class="fas fa-gem fa-2x" style="color:#ff7675;"></i><h3>Limited Art Series</h3><p>Collector’s delight</p></div>
+      <div class="feature-card reveal"><i class="fas fa-globe-asia fa-2x" style="color:#fdcb6e;"></i><h3>Pan-India Delivery</h3><p>Fast & safe</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial slider -->
+<section>
+  <div class="container">
+    <h2 class="section-title reveal">📣 Readers Love Us</h2>
+    <div class="swiper testi-swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><p>"The most beautiful books I've ever owned! Colors pop and pages feel premium."</p><h4>- Riya Sharma</h4></div>
+        <div class="swiper-slide"><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><p>"Campus notebooks from Book Factory are my everyday joy. So colorful!"</p><h4>- Ankit Verma</h4></div>
+        <div class="swiper-slide"><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><i class="fas fa-star" style="color: #ffb347;"></i><p>"Incredible collection of fantasy novels with art covers. Highly recommend."</p><h4>- Sneha Pillai</h4></div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact section with updated number -->
+<section id="contact">
+  <div class="container">
+    <h2 class="section-title reveal">💌 Let's Connect</h2>
+    <div class="contact-flex">
+      <div class="contact-info reveal">
+        <i class="fas fa-phone-alt" style="color:#ff6b9d;"></i> <h3>Call / WhatsApp</h3>
+        <p>+91 9885064929</p>
+        <i class="fas fa-envelope" style="color:#a363d9;"></i> <h3>Email</h3>
+        <p>vamsi.bookfactory@gmail.com</p>
+        <i class="fas fa-briefcase" style="color:#00cec9;"></i> <h3>Jobs & Collab</h3>
+        <p>jobs.bookfactory@gmail.com</p>
+        <i class="fas fa-map-marker-alt"></i> <h3>📍 Guntur Hub</h3>
+        <p>#83-143/2, MRR Estates, Etukur Road, Guntur</p>
+        <div class="social-links" style="margin-top:1.2rem;">
+          <a href="#"><i class="fab fa-instagram fa-2x" style="margin-right:1rem; color:#bc5f9e;"></i></a>
+          <a href="#"><i class="fab fa-facebook fa-2x" style="margin-right:1rem; color:#3b5998;"></i></a>
+          <a href="#"><i class="fab fa-youtube fa-2x" style="color:#e4405f;"></i></a>
+        </div>
+      </div>
+      <div class="contact-info reveal">
+        <h3>📍 Find our flagship store</h3>
+        <div style="background: #ffe2f0; padding:2rem; border-radius: 2rem; text-align: center;">📍 Map: MRR Estates, Guntur, Andhra Pradesh</div>
+        <p style="margin-top:1rem;"><i class="fab fa-whatsapp"></i> 24/7 order support on WhatsApp</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><h3>📚 ColorCave Books | formerly Book Factory</h3><p>© 2025 — vibrant pages, endless stories</p><p style="margin-top:8px;"><a href="#" style="color:#ff9bc0;">Instagram</a> | <a href="#" style="color:#ff9bc0;">Twitter</a> | <a href="#" style="color:#ff9bc0;">YouTube</a></p></div>
+</footer>
+
+<div class="whatsapp-float"><a href="#" style="color:white;"><i class="fab fa-whatsapp"></i></a></div>
+<div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  // preloader
+  window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    preloader.classList.add('fade-out');
+    setTimeout(() => { preloader.style.display = 'none'; }, 700);
+  });
+
+  // hero swiper
+  const heroSwiper = new Swiper('.hero-swiper', {
+    loop: true, autoplay: { delay: 4000 }, pagination: { el: '.swiper-pagination', clickable: true }, effect: 'slide'
+  });
+  const testiSwiper = new Swiper('.testi-swiper', { loop: true, autoplay: { delay: 3800 }, pagination: { el: '.swiper-pagination' }, slidesPerView: 1, breakpoints: { 768: { slidesPerView: 2 } } });
+
+  // hamburger
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
+  document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', () => navLinks.classList.remove('active')));
+
+  // reveal scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); }); }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // lightbox for book gallery
+  const lightboxDiv = document.createElement('div');
+  lightboxDiv.className = 'lightbox';
+  document.body.appendChild(lightboxDiv);
+  const lightImg = document.createElement('img');
+  lightboxDiv.appendChild(lightImg);
+  const galleryImgs = document.querySelectorAll('.gallery-book img');
+  galleryImgs.forEach(img => {
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      lightImg.src = img.src;
+      lightboxDiv.classList.add('active');
+    });
+  });
+  lightboxDiv.addEventListener('click', () => lightboxDiv.classList.remove('active'));
+
+  // back to top + scroll progress
+  const backBtn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) backBtn.classList.add('show');
+    else backBtn.classList.remove('show');
+  });
+  backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // progress bar
+  const progress = document.createElement('div');
+  progress.style.position = 'fixed'; progress.style.top = '0'; progress.style.left = '0'; progress.style.height = '4px'; progress.style.background = 'linear-gradient(90deg, #ff6b9d, #a363d9)'; progress.style.width = '0%'; progress.style.zIndex = '9999';
+  document.body.appendChild(progress);
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    progress.style.width = (winScroll / height) * 100 + '%';
+  });
+</script>
+</body>
+</html>
